@@ -84,9 +84,9 @@ public:
   virtual bool          empty()const noexcept{return s.empty();}
   virtual std::size_t   size()const noexcept{return s.size();}
   virtual std::size_t   max_size()const noexcept{return s.max_size();}
-  virtual base_sentinel reserve(std::size_t n){s.reserve(n);return end();}
+  virtual base_sentinel reserve(std::size_t n){s.reserve(n);return sentinel();}
   virtual std::size_t   capacity()const noexcept{return s.capacity();}
-  virtual base_sentinel shrink_to_fit(){s.shrink_to_fit();return end();}
+  virtual base_sentinel shrink_to_fit(){s.shrink_to_fit();return sentinel();}
 
   virtual range emplace(
     const_base_iterator p,void (*emplf)(void*,void*),void* arg)
@@ -178,7 +178,7 @@ public:
     return range_from(s.erase(s.begin(),iterator_from(last)));
   }
 
-  virtual base_sentinel clear()noexcept{s.clear();return end();}
+  virtual base_sentinel clear()noexcept{s.clear();return sentinel();}
 
 private:
   friend Model;
@@ -224,11 +224,19 @@ private:
     return s.begin()+(const_store_value_type_ptr(p)-s.data());
   }
 
+  base_sentinel sentinel()const noexcept
+  {
+    return base_iterator{
+      value_ptr(s.data()+s.size()),
+      sizeof(store_value_type)
+    };
+  }
+
   range range_from(const_store_iterator it)const
   {
     return {
       {value_ptr(s.data()+(it-s.begin())),sizeof(store_value_type)},
-      base_sentinel{value_ptr(s.data()+s.size())}
+      sentinel()
     };
   }
     
@@ -236,7 +244,7 @@ private:
   {
     return {
       {value_ptr(s.data()+n),sizeof(store_value_type)},
-      base_sentinel{value_ptr(s.data()+s.size())}
+      sentinel()
     };
   }
 

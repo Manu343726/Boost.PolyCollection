@@ -106,17 +106,23 @@ void test_iterators(PolyCollection& p)
       const auto& cs=s;
 
       BOOST_TEST(
-        s.template begin<Type>()==static_cast<local_iterator>(s.begin()));
+        s.template begin<Type>()==
+        static_cast<local_iterator>(s.begin()));
       BOOST_TEST(
-        s.template end<Type>()==static_cast<local_iterator>(s.end()));
+        s.template end<Type>()==
+        static_cast<local_iterator>(s.end()));
       BOOST_TEST(
-        cs.template begin<Type>()==static_cast<local_iterator>(cs.begin()));
+        cs.template begin<Type>()==
+        static_cast<const_local_iterator>(cs.begin()));
       BOOST_TEST(
-        cs.template end<Type>()==static_cast<local_iterator>(cs.end()));
+        cs.template end<Type>()==
+        static_cast<const_local_iterator>(cs.end()));
       BOOST_TEST(
-        cs.template cbegin<Type>()==static_cast<local_iterator>(cs.cbegin()));
+        cs.template cbegin<Type>()==
+        static_cast<const_local_iterator>(cs.cbegin()));
       BOOST_TEST(
-        cs.template cend<Type>()==static_cast<local_iterator>(cs.cend()));
+        cs.template cend<Type>()==
+        static_cast<const_local_iterator>(cs.cend()));
     }
   }
 }

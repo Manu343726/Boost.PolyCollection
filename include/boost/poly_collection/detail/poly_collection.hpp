@@ -269,7 +269,8 @@ private:
       typename BaseIterator2,
       typename std::enable_if<
         !is_constructible<BaseIterator,BaseIterator2>::value&&
-        is_constructible<BaseIterator,segment_base_iterator>::value
+        is_constructible<BaseIterator,segment_base_iterator>::value&&
+        is_constructible<BaseIterator2,segment_base_iterator>::value
       >::type* =nullptr
     >
     explicit local_iterator_impl(const local_iterator_impl<BaseIterator2>& x):
@@ -277,7 +278,7 @@ private:
         base_iterator_from(x.segment(),x.base())},
       mapit{x.mapit}{}
 
-    // TODO: EXPLAIN BELOW
+    /* define [] to avoid Boost.Iterator operator_brackets_proxy mess */
 
     template<typename DifferenceType>
     typename std::iterator_traits<BaseIterator>::reference
@@ -662,18 +663,18 @@ public:
     return max_size(typeid(T));
   }
 
-	void reserve(size_type n)
+  void reserve(size_type n)
   {
     for(auto& x:map)x.second.reserve(n);
   }
 
-	void reserve(const std::type_index& index,size_type n)
+  void reserve(const std::type_index& index,size_type n)
   {
     segment(get_map_iterator_for(index)).reserve(n);
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
-	void reserve(size_type n)
+  void reserve(size_type n)
   {
     /* note this creates the segment if it didn't previously exist */
 
@@ -698,7 +699,7 @@ public:
     return capacity(typeid(T));
   }
 
-	void shrink_to_fit()
+  void shrink_to_fit()
   {
     for(auto& x:map)x.second.shrink_to_fit();
   }
@@ -968,7 +969,7 @@ public:
 
     for(;first!=last;++first){
       it=std::next(
-        segment_iterator<T>{local_insert<T>(seg,it,*first)});
+        static_cast<segment_iterator<T>>(local_insert<T>(seg,it,*first)));
       ++n;
     }
     return {pos.mapit,it-n};
@@ -1111,7 +1112,8 @@ private:
   const_segment_map_iterator get_map_iterator_for(const T&)const
   {
     static_assert(
-      true/*false*/,"type must be move constructible and move assignable");
+      is_acceptable<T>::value,
+      "type must be move constructible and move assignable");
     return {}; /* never executed */
   }
 
@@ -1247,7 +1249,8 @@ private:
     segment_type&,BaseIterator,U&&)
   {
     static_assert(
-      true/*false*/,"element must be constructible from type");
+      is_constructible<T,U&&>::value,
+      "element must be constructible from type");
     return {}; /* never executed */
   }
 

@@ -94,7 +94,7 @@ public:
     i.reserve(n+1);
     s.reserve(n);
     if(rebuild)rebuild_index();
-    return end();
+    return sentinel();
   };
 
   virtual std::size_t capacity()const noexcept{return s.capacity();}
@@ -113,7 +113,7 @@ public:
       rebuild_index();
       throw;
     }
-    return end();
+    return sentinel();
   }
 
   virtual range emplace(
@@ -254,7 +254,7 @@ public:
   {
     s.clear();
     for(std::size_t n=i.size()-1;n--;)i.pop_back();
-    return end();
+    return sentinel();
   }
 
 private:
@@ -369,20 +369,19 @@ private:
     return s.begin()+(const_concrete_ptr(p)-const_concrete_ptr(s.data()));
   }
 
+  base_sentinel sentinel()const noexcept
+  {
+    return base_iterator{value_ptr(i.data()+s.size())};
+  }
+
   range range_from(const_store_iterator it)const
   {
-    return {
-      base_iterator{value_ptr(i.data()+(it-s.begin()))},
-      base_sentinel{value_ptr(i.data()+s.size())}
-    };
+    return {base_iterator{value_ptr(i.data()+(it-s.begin()))},sentinel()};
   }
     
   range range_from(std::size_t n)const
   {
-    return {
-      base_iterator{value_ptr(i.data()+n)},
-      base_sentinel{value_ptr(i.data()+s.size())}
-    };
+    return {base_iterator{value_ptr(i.data()+n)},sentinel()};
   }
 
   store s;

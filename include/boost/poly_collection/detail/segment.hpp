@@ -81,9 +81,9 @@ public:
   bool          empty()const noexcept{return pimpl->empty();}
   std::size_t   size()const noexcept{return pimpl->size();}
   std::size_t   max_size()const noexcept{return pimpl->max_size();}
-	void          reserve(std::size_t n){filter(pimpl->reserve(n));}
+  void          reserve(std::size_t n){filter(pimpl->reserve(n));}
   std::size_t   capacity()const noexcept{return pimpl->capacity();}
-	void          shrink_to_fit(){filter(pimpl->shrink_to_fit());}
+  void          shrink_to_fit(){filter(pimpl->shrink_to_fit());}
   template<typename Iterator>
   base_iterator emplace(Iterator it,void (*emplf)(void*,void*),void* arg)
                   {return filter(pimpl->emplace(decay(it),emplf,arg));}
