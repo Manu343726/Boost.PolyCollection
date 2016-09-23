@@ -7,28 +7,28 @@
  *
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
-  
+
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <numeric> 
+#include <numeric>
 
 std::chrono::high_resolution_clock::time_point measure_start,measure_pause;
-    
+
 template<typename F>
 double measure(F f)
 {
   using namespace std::chrono;
-    
+
   static const int              num_trials=10;
   static const milliseconds     min_time_per_trial(200);
   std::array<double,num_trials> trials;
   volatile decltype(f())        res; /* to avoid optimizing f() away */
-    
+
   for(int i=0;i<num_trials;++i){
     int                               runs=0;
     high_resolution_clock::time_point t2;
-    
+
     measure_start=high_resolution_clock::now();
     do{
       res=f();
@@ -38,7 +38,7 @@ double measure(F f)
     trials[i]=duration_cast<duration<double>>(t2-measure_start).count()/runs;
   }
   (void)res; /* var not used warn */
-    
+
   std::sort(trials.begin(),trials.end());
   return std::accumulate(
     trials.begin()+2,trials.end()-2,0.0)/(trials.size()-4);
@@ -49,19 +49,19 @@ double measure(unsigned int n,F f)
 {
   double t=measure(f);
   return (t/n)*10E9;
-}    
+}
 
 template<typename F>
 unsigned int run(unsigned int,F f)
 {
   return f();
-}    
+}
 
 void pause_timing()
 {
   measure_pause=std::chrono::high_resolution_clock::now();
 }
-    
+
 void resume_timing()
 {
   measure_start+=std::chrono::high_resolution_clock::now()-measure_pause;
@@ -91,7 +91,7 @@ struct derived1 final:base
 {
   derived1(int n):n(n){}
   virtual int operator()(int)const{return n;}
-  
+
   int n;
 };
 
@@ -99,7 +99,7 @@ struct derived2 final:base
 {
   derived2(int n):n(n){}
   virtual int operator()(int x)const{return x*n;}
-  
+
   int unused,n;
 };
 
@@ -107,7 +107,7 @@ struct derived3 final:base
 {
   derived3(int n):n(n){}
   virtual int operator()(int x)const{return x*x*n;}
-  
+
   int unused,n;
 };
 
@@ -115,7 +115,7 @@ struct concrete1
 {
   concrete1(int n):n(n){}
   int operator()(int)const{return n;}
-  
+
   int n;
 };
 
@@ -123,7 +123,7 @@ struct concrete2
 {
   concrete2(int n):n(n){}
   int operator()(int x)const{return x*n;}
-  
+
   int unused,n;
 };
 
@@ -131,7 +131,7 @@ struct concrete3
 {
   concrete3(int n):n(n){}
   int operator()(int x)const{return x*x*n;}
-  
+
   int unused,n;
 };
 
@@ -400,7 +400,7 @@ void insert_perf(
 
   std::cout<<"insert:\n";
   print("n",labels...);
-  
+
   for(unsigned int n=n0;n<=n1;n+=dn,dn=(unsigned int)(dn*fdn)){
     unsigned int m=n/sizeof...(Element),nn=m*sizeof...(Element);
     print(nn,insert_perf(nn,elements,labels)...);
@@ -445,7 +445,7 @@ void for_each_perf(
 
   std::cout<<"for_each:\n";
   print("n",labels...);
-  
+
   for(unsigned int n=n0;n<=n1;n+=dn,dn=(unsigned int)(dn*fdn)){
     unsigned int m=n/sizeof...(Element),nn=m*sizeof...(Element);
     print(nn,for_each_perf(nn,elements,f,labels)...);
@@ -503,7 +503,7 @@ void erase_perf(
 
   std::cout<<"erase:\n";
   print("n",labels...);
-  
+
   for(unsigned int n=n0;n<=n1;n+=dn,dn=(unsigned int)(dn*fdn)){
     unsigned int m=n/sizeof...(Element),nn=m*sizeof...(Element);
     print(nn,erase_perf(nn,elements,labels)...);
