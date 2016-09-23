@@ -65,10 +65,9 @@ class poly_collection
   using enable_if_not_acceptable=
     typename std::enable_if<!is_acceptable<T>::value>::type*;
   template<typename InputIterator>
-  using enable_if_derefs_to_subtype=
-    enable_if_subtype<
-      typename std::iterator_traits<InputIterator>::value_type
-    >;
+  using enable_if_derefs_to_subtype=enable_if_subtype<
+    typename std::iterator_traits<InputIterator>::value_type
+  >;
   template<typename T>
   using is_terminal=
     typename Model::template is_terminal<typename std::decay<T>::type>;
@@ -89,12 +88,11 @@ class poly_collection
   using enable_if_derefs_to_not_terminal=
     typename std::enable_if<!derefs_to_terminal<InputIterator>::value>::type*;
   template<typename T,typename U>
-  using enable_if_not_same=
-    typename std::enable_if<
-      !std::is_same<
-        typename std::decay<T>::type,typename std::decay<U>::type
-      >::value
-    >::type*;
+  using enable_if_not_same=typename std::enable_if<
+    !std::is_same<
+      typename std::decay<T>::type,typename std::decay<U>::type
+    >::value
+  >::type*;
   template<typename T,typename U>
   using enable_if_constructible=
     typename std::enable_if<is_constructible<T,U>::value>::type*;
@@ -1214,7 +1212,7 @@ private:
     segment_type& seg,BaseIterator pos,U&& x)
   {
     BOOST_ASSERT(sub_typeid(x)==typeid(T));
-    return seg.insert(pos,x);
+    return seg.insert(pos,std::forward<U>(x));
   }
 
   template<
@@ -1225,7 +1223,7 @@ private:
   static segment_base_iterator local_insert(
     segment_type& seg,BaseIterator pos,U&& x)
   {
-    if(sub_typeid(x)==typeid(T))return seg.insert(pos,x);
+    if(sub_typeid(x)==typeid(T))return seg.insert(pos,std::forward<U>(x));
     else return emplace_impl<T>(seg,pos,std::forward<U>(x));
   }
 

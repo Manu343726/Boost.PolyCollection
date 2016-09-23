@@ -49,7 +49,6 @@ class split_segment:public segment_backend<Model>
     typename std::allocator_traits<Allocator>::
       template rebind_alloc<value_holder<Concrete>>
   >;
-  using store_allocator_type=typename store::allocator_type;
   using store_value_type=typename store::value_type;
   using const_store_iterator=typename store::const_iterator;
   using index=std::vector<
@@ -57,7 +56,6 @@ class split_segment:public segment_backend<Model>
     typename std::allocator_traits<Allocator>::
       template rebind_alloc<value_type>
   >;
-  using index_allocator_type=typename index::allocator_type;
   using const_index_iterator=typename index::const_iterator;
   using segment_backend=detail::segment_backend<Model>;
   using typename segment_backend::value_pointer;
