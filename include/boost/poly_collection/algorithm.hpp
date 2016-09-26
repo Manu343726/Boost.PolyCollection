@@ -49,26 +49,17 @@ struct for_each_case
   Function& f;
 };
 
-template<typename T,typename... Ts,typename SegmentTraversalInfo,typename Function>
+template<typename... Ts,typename SegmentTraversalInfo,typename Function>
 Function for_each(SegmentTraversalInfo st,Function f)
 {
   using segment_info=decltype(*st.begin());
 
-  auto sw=detail::segment_switch<T,Ts...>(
+  auto sw=detail::segment_switch<Ts...>(
     [&](segment_info s){for(auto& x:s)f(x);},
-    for_each_case<T,segment_info,Function>{f},
     for_each_case<Ts,segment_info,Function>{f}...
   );
 
   for(auto s:st)sw(s);
-  return std::move(f);
-}
-
-template<typename SegmentTraversalInfo,typename Function>
-Function for_each(SegmentTraversalInfo st,Function f)
-{
-  for(auto s:st)for(auto& x:s)f(x);
-
   return std::move(f);
 }
 
