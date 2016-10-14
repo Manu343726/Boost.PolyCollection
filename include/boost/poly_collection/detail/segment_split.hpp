@@ -13,7 +13,6 @@
 #pragma once
 #endif
 
-
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <typeindex>

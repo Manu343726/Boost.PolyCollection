@@ -28,7 +28,7 @@ template<typename... Values>
 void do_(Values...){}
 
 template<typename Exception,typename F>
-void check_throw_(F f)
+void check_throw_case(F f)
 {
   try{
     (void)f();
@@ -41,7 +41,7 @@ void check_throw_(F f)
 template<typename Exception,typename... Fs>
 void check_throw(Fs... f)
 {
-  do_((check_throw_<Exception>(f),0)...);
+  do_((check_throw_case<Exception>(f),0)...);
 }
 
 template<typename F1,typename F2>
@@ -211,17 +211,17 @@ using only_eq_comparable=instantiate_with<
 template<typename T> struct identity{using type=T;};
 
 template<typename Constraints,typename... Ts>
-struct first_of_s{};
+struct first_of_class{};
 
 template<typename Constraints,typename T,typename... Ts>
-struct first_of_s<Constraints,T,Ts...>:std::conditional<
+struct first_of_class<Constraints,T,Ts...>:std::conditional<
   Constraints::template apply<T>::value,
   identity<T>,
-  first_of_s<Constraints,Ts...>
+  first_of_class<Constraints,Ts...>
 >::type{};
 
 template<typename Constraints,typename... Ts>
-using first_of=typename first_of_s<Constraints,Ts...>::type;
+using first_of=typename first_of_class<Constraints,Ts...>::type;
 
 template<
   typename Constraints,typename... Ts,
@@ -268,32 +268,32 @@ bool is_last(const PolyCollection& p,Iterator it)
 };
 
 template<typename Iterator>
-struct external_iterator_:
-  public boost::iterator_adaptor<external_iterator_<Iterator>,Iterator>
+struct external_iterator_class:
+  public boost::iterator_adaptor<external_iterator_class<Iterator>,Iterator>
 {
-  external_iterator_(const Iterator& it):
-    external_iterator_::iterator_adaptor_{it}{}
+  external_iterator_class(const Iterator& it):
+    external_iterator_class::iterator_adaptor_{it}{}
 };
 
 template<typename Iterator>
-external_iterator_<Iterator> external_iterator(Iterator it)
+external_iterator_class<Iterator> external_iterator(Iterator it)
 {
   return it;
 }
 
 template<typename Iterator>
-struct unwrap_iterator_:public boost::iterator_adaptor<
-  unwrap_iterator_<Iterator>,
+struct unwrap_iterator_class:public boost::iterator_adaptor<
+  unwrap_iterator_class<Iterator>,
   Iterator,
   typename std::iterator_traits<Iterator>::value_type::type
 >
 {
-  unwrap_iterator_(const Iterator& it):
-    unwrap_iterator_::iterator_adaptor_{it}{}
+  unwrap_iterator_class(const Iterator& it):
+    unwrap_iterator_class::iterator_adaptor_{it}{}
 };
 
 template<typename Iterator>
-unwrap_iterator_<Iterator> unwrap_iterator(Iterator it)
+unwrap_iterator_class<Iterator> unwrap_iterator(Iterator it)
 {
   return it;
 }
@@ -328,18 +328,18 @@ struct rooted_allocator:std::allocator<T>
 };
 
 template<typename PolyCollection,template<typename> class Allocator>
-struct realloc_poly_collection_t;
+struct realloc_poly_collection_class;
 
 template<typename PolyCollection,template<typename> class Allocator>
 using realloc_poly_collection=
-  typename realloc_poly_collection_t<PolyCollection,Allocator>::type;
+  typename realloc_poly_collection_class<PolyCollection,Allocator>::type;
 
 template<
   template<typename,typename> class PolyCollection,
   typename T,typename OriginalAllocator,
   template<typename> class Allocator
 >
-struct realloc_poly_collection_t<
+struct realloc_poly_collection_class<
   PolyCollection<T,OriginalAllocator>,Allocator
 >
 {

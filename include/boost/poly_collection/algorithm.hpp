@@ -123,7 +123,7 @@ Iterator generic_find(
     cast_return<local_base_iterator>(Algorithm{}),
     std::forward<Args>(args)...);
   for(auto i:segment_split(first,last)){
-    local_base_iterator it=alg(i);
+    auto it=alg(i);
     if(it!=i.end())
       return traits::iterator_from(
         it,traits::end_segment_info_iterator_from(last));
@@ -192,8 +192,33 @@ Iterator find_first_of(
   return generic_find<std_find_first_of,Ts...>(first1,last1,first2,last2,pred);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(
-  std_adjacent_find,std::adjacent_find);
+template<typename... Ts>
+struct adjacent_find_alg
+{
+  template<
+    typename LocalIterator,typename BinaryPredicate,typename LocalBaseIterator
+  >
+  LocalBaseIterator operator()(
+    LocalIterator first,LocalIterator last,BinaryPredicate pred,
+    bool& carry,std::type_index& prev_index, /* note the &s */
+    LocalBaseIterator& prev)const
+  {
+    if(first==last)return LocalBaseIterator{last};
+    if(carry){
+      auto p=restitute_iterator<Ts...>(deref_to(pred));
+      if(p(prev_index,prev,first))return prev;
+    }
+    auto res=std::adjacent_find(first,last,pred);
+    if(res==last){
+      carry=true;
+      prev_index=typeid(
+        typename std::iterator_traits<LocalIterator>::value_type);
+      prev=LocalBaseIterator{last-1};
+    }
+    else carry=false;
+    return LocalBaseIterator{res};
+  }
+};
 
 template<
   typename... Ts,typename Iterator,typename BinaryPredicate,
@@ -202,36 +227,14 @@ template<
 Iterator adjacent_find(
   const Iterator& first,const Iterator& last,BinaryPredicate pred)
 {
-  // TODO: REWRITE MORE UNIQUE_COPY
-
   using traits=iterator_traits<Iterator>;
   using local_base_iterator=typename traits::local_base_iterator;
 
-  auto alg=restitute_range<Ts...>(
-    cast_return<local_base_iterator>(std_adjacent_find{}),pred);
-  auto sp=segment_split(first,last);
-  auto sit=sp.begin(),send=sp.end();
-  while(sit!=send&&sit->begin()==sit->end())++sit;
-  if(sit!=send){
-    for(;;){
-      local_base_iterator it=alg(*sit);
-      if(it!=sit->end())
-        return traits::iterator_from(
-          it,traits::end_segment_info_iterator_from(last));
-
-      auto sit1=sit;
-      do{++sit1;}while(sit1!=send&&sit1->begin()==sit1->end());
-      if(sit1==send)break;
-
-      auto p=binary_restitute_iterator<Ts...>(deref_to(pred));
-      if(p(sit->type_index(),sit->end()-1,sit1->type_index(),sit1->begin())){
-        return traits::iterator_from(
-          sit->end()-1,traits::end_segment_info_iterator_from(last));
-      }
-      sit=sit1;
-    }
-  }
-  return last;
+  bool                carry=false;
+  std::type_index     prev_index{typeid(void)};
+  local_base_iterator prev;
+  return generic_find<adjacent_find_alg<Ts...>,Ts...>(
+    first,last,pred,carry,prev_index,prev);  
 }
 
 template<
@@ -456,13 +459,13 @@ bool is_permutation_suffix(
 {
   using traits=iterator_traits<Iterator>;
 
+  auto send=traits::end_segment_info_iterator_from(last1);
   for(auto i:segment_split(first1,last1)){
     for(auto lbscan=i.begin();lbscan!=i.end();++lbscan){
       auto index=i.type_index();
       auto p=head_closure(
         restitute_iterator<Ts...>(deref_1st_to(pred)),index,lbscan);
-      auto scan=traits::iterator_from(
-        lbscan,traits::end_segment_info_iterator_from(last1));
+      auto scan=traits::iterator_from(lbscan,send);
       if(algorithm::find_if<Ts...>(first1,scan,p)!=scan)continue;
       std::ptrdiff_t matches=std::count_if(first2,last2,p);
       if(matches==0||
@@ -534,7 +537,7 @@ Iterator search(
 {
   using traits=iterator_traits<Iterator>;
 
-  auto send=traits::end_segment_info_iterator_from(first1);
+  auto send=traits::end_segment_info_iterator_from(last1);
   for(auto i:segment_split(first1,last1)){
     for(auto lbit=i.begin(),lbend=i.end();lbit!=lbend;++lbit){
       Iterator it=traits::iterator_from(lbit,send);
@@ -634,7 +637,7 @@ Iterator search_n(
                         count,carry,remain,x,pred);
   local_base_iterator prev;
   for(auto i:segment_split(first,last)){
-    local_base_iterator it=alg(i);
+    auto it=alg(i);
     if(it!=i.end()){
       if(remain==0)
         return traits::iterator_from(
@@ -902,7 +905,7 @@ OutputIterator unique_copy(
   using local_base_iterator=typename traits::local_base_iterator;
 
   bool                carry=false;
-  std::type_index     prev_index(typeid(void));
+  std::type_index     prev_index{typeid(void)};
   local_base_iterator prev;
   return generic_copy<unique_copy_alg<Ts...>,Ts...>(
     first,last,res,pred,carry,prev_index,prev);  
