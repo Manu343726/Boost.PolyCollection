@@ -33,6 +33,7 @@ template<typename R,typename... Args>
 class callable_wrapper<R(Args...)>
 {
 public:
+  /* TODO: we should prevent assignment by user code */
   template<
     typename Callable,
     typename std::enable_if<
@@ -40,7 +41,7 @@ public:
       is_callable<Callable(Args...),R>::value
     >::type* =nullptr
   >
-  callable_wrapper(Callable& x)noexcept:pt{info(x)},px{&x}{}
+  explicit callable_wrapper(Callable& x)noexcept:pt{info(x)},px{&x}{}
   callable_wrapper(const callable_wrapper&)=default;
   callable_wrapper& operator=(const callable_wrapper&)=default;
 
@@ -77,7 +78,7 @@ private:
   static table* info(Callable&)noexcept
   {
     static table t={
-      [](void* p,Args... args){
+      [](void* p,Args... args)->R{
         auto r=std::ref(*static_cast<Callable*>(p));
         return r(std::forward<Args>(args)...);
       },

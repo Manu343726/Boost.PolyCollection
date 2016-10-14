@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <boost/assert.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
-#include <boost/iterator/iterator_facade.hpp>
+#include <boost/poly_collection/detail/iterator_impl.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
@@ -24,6 +24,7 @@
 #include <boost/poly_collection/exception.hpp>
 #include <iterator>
 #include <limits>
+#include <new>
 #include <type_traits>
 #include <typeindex>
 #include <unordered_map>
@@ -134,177 +135,19 @@ public:
   using const_pointer=typename std::allocator_traits<Allocator>::const_pointer;
 
 private:
+  template<typename,bool>
+  friend class detail::iterator_impl;
+  template<typename,typename>
+  friend class detail::local_iterator_impl;
   template<bool Const>
-  using iterator_impl_value_type=
-    typename std::conditional<Const,const value_type,value_type>::type;
-  template<bool Const>
-  class iterator_impl:
-    public boost::iterator_facade<
-      iterator_impl<Const>,
-      iterator_impl_value_type<Const>,
-      boost::forward_traversal_tag
-    >
-  {
-  public:
-    using value_type=iterator_impl_value_type<Const>;
-
-  private:
-    iterator_impl(
-      const_segment_map_iterator mapit,
-      const_segment_map_iterator mapend)noexcept:
-      mapit{mapit},mapend{mapend}
-    {
-      next_segment_position();
-    }
-
-    iterator_impl(
-      const_segment_map_iterator mapit_,const_segment_map_iterator mapend_,
-      const_segment_base_iterator segpos_)noexcept:
-      mapit{mapit_},mapend{mapend_},segpos{segpos_}
-    {
-      if(mapit!=mapend&&segpos==sentinel()){
-        ++mapit;
-        next_segment_position();
-      }
-    }
-
-  public:
-    iterator_impl()=default;
-    iterator_impl(const iterator_impl&)=default;
-    iterator_impl& operator=(const iterator_impl&)=default;
-
-    template<bool Const2,typename std::enable_if<!Const2>::type* =nullptr>
-    iterator_impl(const iterator_impl<Const2>& x):
-      mapit{x.mapit},mapend{x.mapend},segpos{x.segpos}{}
-      
-  private:
-    template<bool>
-    friend class iterator_impl;
-    friend class poly_collection;
-    friend class boost::iterator_core_access;
-
-    value_type& dereference()const noexcept
-      {return const_cast<value_type&>(*segpos);}
-    bool equal(const iterator_impl& x)const noexcept{return segpos==x.segpos;}
-
-    void increment()noexcept
-    {
-      if(++segpos==sentinel()){
-        ++mapit;
-        next_segment_position();
-      }
-    }
-
-    void next_segment_position()noexcept
-    {
-      for(;mapit!=mapend;++mapit){
-        segpos=segment().begin();
-        if(segpos!=sentinel())return;
-      }
-      segpos=nullptr;
-    }
-
-    segment_type&       segment()noexcept
-      {return const_cast<segment_type&>(mapit->second);}
-    const segment_type& segment()const noexcept{return mapit->second;}
-
-    const_segment_base_sentinel sentinel()const noexcept
-      {return segment().sentinel();}
-
-    const_segment_map_iterator  mapit,mapend;
-    const_segment_base_iterator segpos;
-  };
+  using iterator_impl=detail::iterator_impl<poly_collection,Const>;
+  template<typename BaseIterator>
+  using local_iterator_impl=
+    detail::local_iterator_impl<poly_collection,BaseIterator>;
 
 public:
   using iterator=iterator_impl<false>;
   using const_iterator=iterator_impl<true>;
-
-private:
-  template<typename BaseIterator>
-  class local_iterator_impl:
-    public boost::iterator_adaptor<
-      local_iterator_impl<BaseIterator>,
-      BaseIterator
-    >
-  {
-    template<typename Iterator>
-    local_iterator_impl(
-      const_segment_map_iterator mapit,
-      Iterator it):
-      local_iterator_impl::iterator_adaptor_{BaseIterator(it)},
-      mapit{mapit}
-    {}
-
-  public:
-    using base_iterator=BaseIterator;
-
-    local_iterator_impl()=default;
-    local_iterator_impl(const local_iterator_impl&)=default;
-    local_iterator_impl& operator=(const local_iterator_impl&)=default;
-
-    template<
-      typename BaseIterator2,
-      typename std::enable_if<
-        std::is_convertible<BaseIterator2,BaseIterator>::value
-      >::type* =nullptr
-    >
-    local_iterator_impl(const local_iterator_impl<BaseIterator2>& x):
-      local_iterator_impl::iterator_adaptor_{x.base()},
-      mapit{x.mapit}{}
-
-    template<
-      typename BaseIterator2,
-      typename std::enable_if<
-        !std::is_convertible<BaseIterator2,BaseIterator>::value&&
-        is_constructible<BaseIterator,BaseIterator2>::value
-      >::type* =nullptr
-    >
-    explicit local_iterator_impl(const local_iterator_impl<BaseIterator2>& x):
-      local_iterator_impl::iterator_adaptor_{BaseIterator(x.base())},
-      mapit{x.mapit}{}
-
-    template<
-      typename BaseIterator2,
-      typename std::enable_if<
-        !is_constructible<BaseIterator,BaseIterator2>::value&&
-        is_constructible<BaseIterator,segment_base_iterator>::value&&
-        is_constructible<BaseIterator2,segment_base_iterator>::value
-      >::type* =nullptr
-    >
-    explicit local_iterator_impl(const local_iterator_impl<BaseIterator2>& x):
-      local_iterator_impl::iterator_adaptor_{
-        base_iterator_from(x.segment(),x.base())},
-      mapit{x.mapit}{}
-
-    /* define [] to avoid Boost.Iterator operator_brackets_proxy mess */
-
-    template<typename DifferenceType>
-    typename std::iterator_traits<BaseIterator>::reference
-    operator[](DifferenceType n)const{return *(*this+n);}
-
-  private:
-    template<typename>
-    friend class local_iterator_impl;
-    friend class poly_collection;
-
-    template<typename BaseIterator2>
-    static BaseIterator base_iterator_from(
-      const segment_type& s,BaseIterator2 it)
-    {
-      segment_base_iterator bit=s.begin();
-      return BaseIterator{bit+(it-static_cast<BaseIterator2>(bit))};
-    } 
-
-    std::type_index            type_index()const{return mapit->first;}
-    segment_type&              segment()noexcept
-      {return const_cast<segment_type&>(mapit->second);}
-    const segment_type&        segment()const noexcept
-      {return mapit->second;}
-
-    const_segment_map_iterator mapit;
-  };
-
-public:
   using local_base_iterator=local_iterator_impl<segment_base_iterator>;
   using const_local_base_iterator=
     local_iterator_impl<const_segment_base_iterator>;
@@ -420,6 +263,8 @@ private:
     friend class segment_info_iterator_impl;
     friend class poly_collection;
     friend class boost::iterator_core_access;
+    template<typename>
+    friend struct iterator_traits;
 
     SegmentInfo dereference()const noexcept{return this->base();}
   };
@@ -1272,7 +1117,8 @@ bool operator==(
 
 template<typename Model,typename Allocator>
 bool operator!=(
-  poly_collection<Model,Allocator>& x,poly_collection<Model,Allocator>& y)
+  const poly_collection<Model,Allocator>& x,
+  const poly_collection<Model,Allocator>& y)
 {
   return !(x==y);
 }

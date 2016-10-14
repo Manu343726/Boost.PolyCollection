@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#ifndef BOOST_FLYWEIGHT_TEST_BASE_TYPES_HPP
-#define BOOST_FLYWEIGHT_TEST_BASE_TYPES_HPP
+#ifndef BOOST_POLY_COLLECTION_TEST_BASE_TYPES_HPP
+#define BOOST_POLY_COLLECTION_TEST_BASE_TYPES_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -72,6 +72,12 @@ using t2=derived2;
 using t3=derived3;
 using t4=derived4;
 using t5=derived5;
+
+struct to_int
+{
+  template<typename F>
+  int operator()(const F& f)const{return f(1);}
+};
 
 } /* namespace base_types*/
 

@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#ifndef BOOST_FLYWEIGHT_TEST_TEST_UTILITIES_HPP
-#define BOOST_FLYWEIGHT_TEST_TEST_UTILITIES_HPP
+#ifndef BOOST_POLY_COLLECTION_TEST_TEST_UTILITIES_HPP
+#define BOOST_POLY_COLLECTION_TEST_TEST_UTILITIES_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -17,6 +17,7 @@
 #include <boost/core/lightweight_test.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/type_traits/has_equal_to.hpp>
+#include <iterator>
 #include <memory>
 #include <type_traits>
 #include <typeindex>
@@ -41,6 +42,47 @@ template<typename Exception,typename... Fs>
 void check_throw(Fs... f)
 {
   do_((check_throw_<Exception>(f),0)...);
+}
+
+template<typename F1,typename F2>
+struct compose_class
+{
+  F1 f1;
+  F2 f2;
+
+  template<typename T,typename... Args>
+  auto operator()(T&& x,Args&&... args)
+    ->decltype((this->f2)((this->f1)(
+      std::forward<T>(x)),std::forward<Args>(args)...))
+  {
+    return f2(f1(std::forward<T>(x)),std::forward<Args>(args)...);
+  }
+};
+
+template<typename F1,typename F2>
+compose_class<F1,F2> compose(F1 f1,F2 f2)
+{
+  return {f1,f2};
+}
+
+template<typename F1,typename F2>
+struct compose_all_class
+{
+  F1 f1;
+  F2 f2;
+
+  template<typename... Args>
+  auto operator()(Args&&... args)
+    ->decltype((this->f2)((this->f1)(std::forward<Args>(args))...))
+  {
+    return f2(f1(std::forward<Args>(args))...);
+  }
+};
+
+template<typename F1,typename F2>
+compose_all_class<F1,F2> compose_all(F1 f1,F2 f2)
+{
+  return {f1,f2};
 }
 
 using std::is_default_constructible;
@@ -117,6 +159,55 @@ struct constraints<Trait,Traits...>
   >{};
 };
 
+template<typename... Ts>struct type_list{};
+
+template<
+  typename Constraints,template <typename...> class Template,
+  typename TypeList,
+  typename... Ts
+>
+struct instantiate_with_class;
+
+template<
+  typename Constraints,template <typename...> class Template,
+  typename... Us
+>
+struct instantiate_with_class<Constraints,Template,type_list<Us...>>
+{using type=Template<Us...>;};
+
+template<
+  typename Constraints,template <typename...> class Template,
+  typename... Us,
+  typename T,typename... Ts
+>
+struct instantiate_with_class<
+  Constraints,Template,type_list<Us...>,T,Ts...
+>:instantiate_with_class<
+  Constraints,Template,
+  typename std::conditional<
+    Constraints::template apply<T>::value,
+    type_list<Us...,T>,
+    type_list<Us...>
+  >::type,
+  Ts...
+>{};
+
+template<
+  typename Constraints,template <typename...> class Template,
+  typename... Ts
+>
+using instantiate_with=typename instantiate_with_class<
+  Constraints,Template,type_list<>,Ts...
+>::type;
+
+template<
+  template <typename...> class Template,typename... Ts
+>
+using only_eq_comparable=instantiate_with<
+  constraints<is_equality_comparable>,
+  Template, Ts...
+>;
+
 template<typename T> struct identity{using type=T;};
 
 template<typename Constraints,typename... Ts>
@@ -190,10 +281,35 @@ external_iterator_<Iterator> external_iterator(Iterator it)
   return it;
 }
 
+template<typename Iterator>
+struct unwrap_iterator_:public boost::iterator_adaptor<
+  unwrap_iterator_<Iterator>,
+  Iterator,
+  typename std::iterator_traits<Iterator>::value_type::type
+>
+{
+  unwrap_iterator_(const Iterator& it):
+    unwrap_iterator_::iterator_adaptor_{it}{}
+};
+
+template<typename Iterator>
+unwrap_iterator_<Iterator> unwrap_iterator(Iterator it)
+{
+  return it;
+}
+
 struct auto_increment
 {
   template<typename T>
   T make(){return T(n++);}
+
+  int n=0;
+};
+
+struct jammed_auto_increment
+{
+  template<typename T>
+  T make(){return T(n++/10);}
 
   int n=0;
 };

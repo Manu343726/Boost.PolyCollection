@@ -6,14 +6,15 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#ifndef BOOST_FLYWEIGHT_TEST_ANY_TYPES_HPP
-#define BOOST_FLYWEIGHT_TEST_ANY_TYPES_HPP
+#ifndef BOOST_POLY_COLLECTION_TEST_ANY_TYPES_HPP
+#define BOOST_POLY_COLLECTION_TEST_ANY_TYPES_HPP
 
 #if defined(_MSC_VER)
 #pragma once
 #endif
 
 #include <boost/poly_collection/any_collection.hpp>
+#include <boost/type_erasure/any_cast.hpp>
 #include <boost/type_erasure/operators.hpp>
 
 namespace any_types{
@@ -46,6 +47,28 @@ using t2=double;
 using t3=incrementable3;
 using t4=int;
 using t5=char;
+
+struct to_int
+{
+  template<typename Concept,typename Tag>
+  int operator()(const boost::type_erasure::any<Concept,Tag>& x)const
+  {
+    using boost::type_erasure::any_cast;
+
+    if(auto p=any_cast<t1*>(&x))return (*this)(*p);
+    if(auto p=any_cast<t2*>(&x))return (*this)(*p);
+    if(auto p=any_cast<t3*>(&x))return (*this)(*p);
+    if(auto p=any_cast<t4*>(&x))return (*this)(*p);
+    if(auto p=any_cast<t5*>(&x))return (*this)(*p);
+    else return 0;
+  }
+
+  int operator()(const t1& x)const{return x.n;}
+  int operator()(const t2& x)const{return static_cast<int>(x);};
+  int operator()(const t3& x)const{return static_cast<int>(x.n);}
+  int operator()(const t4& x)const{return x;}
+  int operator()(const t5& x)const{return static_cast<int>(x);};
+};
 
 } /* namespace any_types*/
 
