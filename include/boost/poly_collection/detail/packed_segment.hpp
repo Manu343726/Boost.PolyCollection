@@ -84,8 +84,8 @@ public:
   virtual bool          empty()const noexcept{return s.empty();}
   virtual std::size_t   size()const noexcept{return s.size();}
   virtual std::size_t   max_size()const noexcept{return s.max_size();}
-  virtual base_sentinel reserve(std::size_t n){s.reserve(n);return sentinel();}
   virtual std::size_t   capacity()const noexcept{return s.capacity();}
+  virtual base_sentinel reserve(std::size_t n){s.reserve(n);return sentinel();}
   virtual base_sentinel shrink_to_fit(){s.shrink_to_fit();return sentinel();}
 
   virtual range emplace(

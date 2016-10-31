@@ -49,7 +49,7 @@ using enable_if_poly_collection_iterator=typename std::enable_if<
   !std::is_void<typename poly_collection_of<Iterator>::type>::value
 >::type*;
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_all_of,std::all_of);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_all_of,std::all_of)
 
 template<
   typename... Ts,typename Iterator,typename Predicate,
@@ -62,7 +62,7 @@ bool all_of(const Iterator& first,const Iterator& last,Predicate pred)
   return true;
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_any_of,std::any_of);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_any_of,std::any_of)
 
 template<
   typename... Ts,typename Iterator,typename Predicate,
@@ -75,7 +75,7 @@ bool any_of(const Iterator& first,const Iterator& last,Predicate pred)
   return false;
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_none_of,std::none_of);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_none_of,std::none_of)
 
 template<
   typename... Ts,typename Iterator,typename Predicate,
@@ -131,7 +131,7 @@ Iterator generic_find(
   return last;
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find,std::find);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find,std::find)
 
 template<
   typename... Ts,typename Iterator,typename T,
@@ -142,7 +142,7 @@ Iterator find(const Iterator& first,const Iterator& last,const T& x)
   return generic_find<std_find,Ts...>(first,last,x);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find_if,std::find_if);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find_if,std::find_if)
 
 template<
   typename... Ts,typename Iterator,typename Predicate,
@@ -153,7 +153,7 @@ Iterator find_if(const Iterator& first,const Iterator& last,Predicate pred)
   return generic_find<std_find_if,Ts...>(first,last,pred);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find_if_not,std::find_if_not);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find_if_not,std::find_if_not)
 
 template<
   typename... Ts,typename Iterator,typename Predicate,
@@ -166,8 +166,7 @@ Iterator find_if_not(const Iterator& first,const Iterator& last,Predicate pred)
 
 /* find_end defined after search below */
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(
-  std_find_first_of,std::find_first_of);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_find_first_of,std::find_first_of)
 
 template<
   typename... Ts,typename Iterator,typename ForwardIterator,
@@ -260,7 +259,7 @@ std::ptrdiff_t generic_count(
   return res;
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_count,std::count);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_count,std::count)
 
 template<
   typename... Ts,typename Iterator,typename T,
@@ -271,7 +270,7 @@ std::ptrdiff_t count(const Iterator& first,const Iterator& last,const T& x)
   return generic_count<std_count,Ts...>(first,last,x);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_count_if,std::count_if);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_count_if,std::count_if)
 
 template<
   typename... Ts,typename Iterator,typename Predicate,
@@ -677,7 +676,7 @@ OutputIterator generic_copy(
   return res;
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy,std::copy);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy,std::copy)
 
 template<
   typename... Ts,typename Iterator,typename OutputIterator,
@@ -689,7 +688,7 @@ OutputIterator copy(
   return generic_copy<std_copy,Ts...>(first,last,res);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy_n,std::copy_n);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy_n,std::copy_n)
 
 template<
   typename... Ts,typename Iterator,typename Size,typename OutputIterator,
@@ -714,7 +713,7 @@ OutputIterator copy_n(const Iterator& first,Size count,OutputIterator res)
   return res;
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy_if,std::copy_if);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy_if,std::copy_if)
 
 template<
   typename... Ts,typename Iterator,typename OutputIterator,typename Predicate,
@@ -726,7 +725,7 @@ OutputIterator copy_if(
   return generic_copy<std_copy_if,Ts...>(first,last,res,pred);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_move,std::move);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_move,std::move)
 
 template<
   typename... Ts,typename Iterator,typename OutputIterator,
@@ -738,7 +737,7 @@ OutputIterator move(
   return generic_copy<std_move,Ts...>(first,last,res);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_transform,std::transform);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_transform,std::transform)
 
 template<
   typename... Ts,typename Iterator,
@@ -782,7 +781,10 @@ OutputIterator transform(
 
 struct replace_copy_alg
 {
-  /* std::replace_copy broken in VS2015 (TODO: provide Connect link) */
+  /* std::replace_copy broken in VS2015, internal ticket VSO#279818 
+   * "<algorithm>: replace_copy() and replace_copy_if() shouldn't use the
+   * conditional operator".
+   */
 
   template<typename InputIterator,typename OutputIterator,typename T>
   OutputIterator operator()(
@@ -810,7 +812,10 @@ OutputIterator replace_copy(
 
 struct replace_copy_if_alg
 {
-  /* std::replace_copy broken in VS2015 (TODO: provide Connect link) */
+  /* std::replace_copy_if broken in VS2015, internal ticket VSO#279818 
+   * "<algorithm>: replace_copy() and replace_copy_if() shouldn't use the
+   * conditional operator".
+   */
 
   template<
     typename InputIterator,typename OutputIterator,
@@ -840,7 +845,7 @@ OutputIterator replace_copy_if(
   return generic_copy<replace_copy_if_alg,Ts...>(first,last,res,pred,new_x);  
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_remove_copy,std::remove_copy);
+BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_remove_copy,std::remove_copy)
 
 template<
   typename... Ts,typename Iterator,typename OutputIterator,typename T,
@@ -853,7 +858,7 @@ OutputIterator remove_copy(
 }
 
 BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(
-  std_remove_copy_if,std::remove_copy_if);
+  std_remove_copy_if,std::remove_copy_if)
 
 template<
   typename... Ts,typename Iterator,typename OutputIterator,typename Predicate,
@@ -945,7 +950,7 @@ bool is_partitioned(const Iterator& first,const Iterator& last,Predicate pred)
 }
 
 BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(
-  std_partition_copy,std::partition_copy);
+  std_partition_copy,std::partition_copy)
 
 template<
   typename... Ts,typename Iterator,
@@ -995,7 +1000,7 @@ Iterator partition_point(
 
 } /* namespace poly_collection::detail */
 
-/* non-modfiying sequence operations */
+/* non-modifying sequence operations */
 
 using detail::algorithm::all_of;
 using detail::algorithm::any_of;

@@ -741,7 +741,7 @@ void test_algorithm()
     vector v;
     for(const auto& x:p)v.push_back(x);
     auto w=v;
-    std::mt19937 gen(73642);
+    std::mt19937 gen{73642};
     std::shuffle(w.begin(),w.end(),gen);
     v.insert(v.end(),w.begin(),w.end());
     auto pred=compose_all(to_int,std::equal_to<int>{});

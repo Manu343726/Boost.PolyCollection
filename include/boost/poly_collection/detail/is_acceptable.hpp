@@ -31,7 +31,8 @@ struct is_acceptable:std::integral_constant<
   bool,
   Model::template is_subtype<T>::value&&
   std::is_move_constructible<typename std::decay<T>::type>::value&&
-  std::is_move_assignable<typename std::decay<T>::type>::value
+  (std::is_move_assignable<typename std::decay<T>::type>::value||
+   std::is_nothrow_move_constructible<typename std::decay<T>::type>::value)
 >{};
 
 } /* namespace poly_collection::detail */

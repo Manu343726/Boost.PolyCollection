@@ -38,6 +38,8 @@ struct derived1 final:base
 struct derived2:base
 {
   derived2(int n):n{n}{}
+  derived2(derived2&&)=default;
+  derived2& operator=(derived2&&)=delete;
   virtual int operator()(int x)const{return x*n;}
   bool operator==(const derived2& x)const{return n==x.n;}
   int n;

@@ -259,7 +259,10 @@ void test_insertion()
     BOOST_TEST(p==p2);
   }
   {
-    using type=first_of<constraints<is_copy_constructible>,Types...>;
+    using type=first_of<
+      constraints<is_copy_constructible,is_equality_comparable>,
+      Types...
+    >;
 
     PolyCollection p,p1,p2;
     ValueFactory   v;

@@ -40,8 +40,6 @@ public:
     local_base_iterator begin()const noexcept{return begin_;}
     local_base_iterator end()const noexcept{return end_;}
 
-    info& operator++()noexcept{++begin_;return *this;}
-
     std::type_index     index_;
     local_base_iterator begin_,end_;
   };

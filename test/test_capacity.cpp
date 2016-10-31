@@ -59,13 +59,15 @@ void test_capacity()
   auto c=cp.capacity();
   BOOST_TEST(c==(std::min)({cp.capacity(typeid(Types))...}));
 
-  fill<constraints<>,Types...>(p,v,10);
-  BOOST_TEST(cp.size()==10*sizeof...(Types));
-  do_((BOOST_TEST(cp.size(typeid(Types))==10),0)...);
-  do_((BOOST_TEST(cp.template size<Types>()==cp.size(typeid(Types))),0)...);
-  do_((BOOST_TEST(
-    cp.template size<Types>()+cp.template capacity<Types>()>=20),0)...);
+  fill<constraints<>,Types...>(p,v,30);
   BOOST_TEST(c==cp.capacity());
+  BOOST_TEST(cp.size()==30*sizeof...(Types));
+  do_((BOOST_TEST(cp.size(typeid(Types))==30),0)...);
+  do_((BOOST_TEST(cp.template size<Types>()==cp.size(typeid(Types))),0)...);
+
+  p.reserve(cp.capacity()+1);
+  BOOST_TEST(cp.size()==30*sizeof...(Types));
+  c=cp.capacity();
 
   p.shrink_to_fit();
   BOOST_TEST(c>=cp.capacity());

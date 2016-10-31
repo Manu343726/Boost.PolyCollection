@@ -506,24 +506,6 @@ public:
     return max_size(typeid(T));
   }
 
-  void reserve(size_type n)
-  {
-    for(auto& x:map)x.second.reserve(n);
-  }
-
-  void reserve(const std::type_index& index,size_type n)
-  {
-    segment(get_map_iterator_for(index)).reserve(n);
-  }
-
-  template<typename T,enable_if_acceptable<T> =nullptr>
-  void reserve(size_type n)
-  {
-    /* note this creates the segment if it didn't previously exist */
-
-    segment(get_map_iterator_for<T>()).reserve(n);
-  }
-
   size_type capacity()const noexcept
   {
     size_type res=(std::numeric_limits<size_type>::max)();
@@ -540,6 +522,24 @@ public:
   size_type capacity()const
   {
     return capacity(typeid(T));
+  }
+
+  void reserve(size_type n)
+  {
+    for(auto& x:map)x.second.reserve(n);
+  }
+
+  void reserve(const std::type_index& index,size_type n)
+  {
+    segment(get_map_iterator_for(index)).reserve(n);
+  }
+
+  template<typename T,enable_if_acceptable<T> =nullptr>
+  void reserve(size_type n)
+  {
+    /* note this creates the segment if it didn't previously exist */
+
+    segment(get_map_iterator_for<T>()).reserve(n);
   }
 
   void shrink_to_fit()
@@ -594,7 +594,6 @@ public:
   emplace_pos(const_local_base_iterator pos,Args&&... args)
   {
     BOOST_ASSERT(pos.type_index()==typeid(T));
-
     return {
       pos.mapit,
       emplace_impl<T>(pos.segment(),pos.base(),std::forward<Args>(args)...)
@@ -651,7 +650,6 @@ public:
   insert(local_iterator_impl<BaseIterator> pos,T&& x)
   {
     BOOST_ASSERT(pos.type_index()==sub_typeid(x));
-   
     return {
       pos.mapit,
       pos.segment().insert(pos.base(),std::forward<T>(x))
@@ -878,7 +876,6 @@ public:
     local_iterator_impl<BaseIterator> last)
   {
     BOOST_ASSERT(first.mapit==last.mapit);
-
     return{
       first.mapit,
       first.segment().erase(first.base(),last.base())
@@ -942,6 +939,7 @@ private:
   >
   const_segment_map_iterator get_map_iterator_for(const T& x)const
   {
+    BOOST_ASSERT(sub_typeid(x)!=typeid(T));
     auto it=map.find(sub_typeid(x));
     if(it!=map.end())return it;
     else throw unregistered_type{sub_typeid(x)};

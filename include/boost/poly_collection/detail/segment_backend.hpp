@@ -62,8 +62,8 @@ struct segment_backend
   virtual bool          empty()const noexcept=0;
   virtual std::size_t   size()const noexcept=0;
   virtual std::size_t   max_size()const noexcept=0;
-  virtual base_sentinel reserve(std::size_t)=0;
   virtual std::size_t   capacity()const noexcept=0;
+  virtual base_sentinel reserve(std::size_t)=0;
   virtual base_sentinel shrink_to_fit()=0;
   virtual range         emplace(
                           const_base_iterator,void (*)(void*,void*),void*)=0;
