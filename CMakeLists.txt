@@ -50,5 +50,5 @@ function(boostpolycoll_executable_setup TARGET)
     )
 endfunction()
 
-add_subdirectory(perf)
+add_subdirectory(example)
 add_subdirectory(test)
