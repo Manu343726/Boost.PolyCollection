@@ -327,8 +327,8 @@ template<typename... Printables>
 void print(Printables... ps)
 {
   const char* delim="";
-  using seq=int[sizeof...(ps)];
-  (void)seq{(std::cout<<delim<<ps,delim=";",0)...};
+  using seq=int[1+sizeof...(ps)];
+  (void)seq{0,(std::cout<<delim<<ps,delim=";",0)...};
   std::cout<<"\n";
 }
 

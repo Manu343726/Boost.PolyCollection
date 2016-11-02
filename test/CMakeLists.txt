@@ -15,6 +15,9 @@ function(add_boostpolycoll_test FEATURE)
 endfunction()
 
 set(BOOST_POLYCOLLECTION_FEATURES
+    algorithm1
+    algorithm2
+    algorithm3
     capacity
     comparison
     construction

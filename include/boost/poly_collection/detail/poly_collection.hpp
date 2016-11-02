@@ -362,8 +362,9 @@ public:
   {
     /* http://twitter.com/SeanParent/status/558765089294020609 */
 
-    using seq=int[sizeof...(T)];
+    using seq=int[1+sizeof...(T)];
     (void)seq{
+      0,
       (map.insert(
         {typeid(T),segment_type::template make<T>(get_allocator())}),0)...
     };

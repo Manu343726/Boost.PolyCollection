@@ -241,31 +241,31 @@ bool is_first(
   const PolyCollection& p,typename PolyCollection::const_iterator it)
 {
   return it==p.begin();
-};
+}
 
 template<typename PolyCollection,typename Iterator>
 bool is_first(const PolyCollection& p,std::type_index index,Iterator it)
 {
   return &*it==&*p.begin(index);
-};
+}
 
 template<typename PolyCollection,typename Iterator>
 bool is_last(const PolyCollection& p,std::type_index index,Iterator it)
 {
   return &*it==&*(p.end(index)-1);
-};
+}
 
 template<typename T,typename PolyCollection,typename Iterator>
 bool is_first(const PolyCollection& p,Iterator it)
 {
   return &*it==&*p.template begin<T>();
-};
+}
 
 template<typename T,typename PolyCollection,typename Iterator>
 bool is_last(const PolyCollection& p,Iterator it)
 {
   return &*it==&*(p.template end<T>()-1);
-};
+}
 
 template<typename Iterator>
 struct external_iterator_class:
