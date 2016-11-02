@@ -13,7 +13,7 @@
 #pragma once
 #endif
 
-#include <boost/type_traits/is_final.hpp>
+//#include <boost/type_traits/is_final.hpp>
 #include <type_traits>
 
 /* technique explained at
@@ -25,7 +25,8 @@ namespace poly_collection{
 namespace detail{
 namespace is_final_fallback{
 
-template<typename T> using is_final=boost::is_final<T>;
+//template<typename T> using is_final=boost::is_final<T>;
+template<typename T> using is_final=std::false_type;
 
 struct hook{};
 
