@@ -13,12 +13,12 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
 #include <boost/poly_collection/detail/callable_wrapper.hpp>
 #include <boost/poly_collection/detail/callable_wrapper_iterator.hpp>
 #include <boost/poly_collection/detail/is_callable.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
+#include <boost/utility/addressof.hpp>
 #include <memory>
 #include <type_traits>
 #include <typeinfo>

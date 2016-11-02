@@ -13,7 +13,6 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 #include <boost/poly_collection/detail/any_iterator.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
@@ -25,6 +24,7 @@
 #include <boost/type_erasure/is_subconcept.hpp>
 #include <boost/type_erasure/relaxed.hpp>
 #include <boost/type_erasure/typeid_of.hpp>
+#include <boost/utility/addressof.hpp>
 #include <memory>
 #include <type_traits>
 #include <typeinfo>

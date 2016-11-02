@@ -13,10 +13,10 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
 #include <boost/type_traits/has_equal_to.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
 #include <boost/poly_collection/exception.hpp>
+#include <boost/utility/addressof.hpp>
 #include <new>
 #include <type_traits>
 #include <utility>

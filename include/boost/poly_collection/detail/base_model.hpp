@@ -13,11 +13,11 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
 #include <boost/poly_collection/detail/value_holder.hpp>
+#include <boost/utility/addressof.hpp>
 #include <memory>
 #include <type_traits>
 #include <typeinfo>
