@@ -63,7 +63,8 @@ class value_holder:public value_holder_base<T>
     bool,
     boost::has_equal_to<T,T>::value
   >;
-  using is_nothrow_equality_comparable=is_nothrow_equality_comparable<T>;
+  using is_nothrow_equality_comparable=
+    detail::is_nothrow_equality_comparable<T>;
 
   void*       data()noexcept{return reinterpret_cast<void*>(&this->s);}
   const void* data()const noexcept

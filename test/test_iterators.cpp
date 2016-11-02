@@ -8,7 +8,7 @@
 
 #include "test_iterators.hpp"
 
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <iterator>
 #include <type_traits>
 #include "any_types.hpp"

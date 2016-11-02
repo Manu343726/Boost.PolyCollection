@@ -14,7 +14,7 @@
 #endif
 
 #include <algorithm>
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <boost/function_output_iterator.hpp>
 #include <boost/poly_collection/algorithm.hpp>
 #include <functional>

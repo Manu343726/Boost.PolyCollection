@@ -9,7 +9,7 @@
 #include "test_construction.hpp"
 
 #include <algorithm>
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <utility>
 #include "any_types.hpp"
 #include "base_types.hpp"

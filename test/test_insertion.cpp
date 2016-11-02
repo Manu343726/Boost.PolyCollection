@@ -9,7 +9,7 @@
 #include "test_insertion.hpp"
 
 #include <algorithm>
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <numeric>
 #include <vector>
 #include "any_types.hpp"

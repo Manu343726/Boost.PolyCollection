@@ -6,7 +6,7 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include "test_insertion.hpp"
 
 int main()

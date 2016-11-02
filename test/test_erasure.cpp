@@ -8,7 +8,7 @@
 
 #include "test_erasure.hpp"
 
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <iterator>
 #include "any_types.hpp"
 #include "base_types.hpp"

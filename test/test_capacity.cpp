@@ -9,7 +9,7 @@
 #include "test_capacity.hpp"
 
 #include <algorithm>
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <limits>
 #include "any_types.hpp"
 #include "base_types.hpp"

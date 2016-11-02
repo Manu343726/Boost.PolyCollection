@@ -14,7 +14,7 @@
 #endif
 
 #include <array>
-#include <boost/core/lightweight_test.hpp>
+#include <boost/detail/lightweight_test.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/type_traits/has_equal_to.hpp>
 #include <iterator>
