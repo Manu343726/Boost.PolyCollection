@@ -35,5 +35,5 @@ foreach(feature ${BOOST_POLYCOLLECTION_FEATURES})
     )
 endforeach()
 
-add_executable(test_all test_all_main.cpp ${test_all_sources})
+add_executable(test_all test_all_main.cpp ${test_all_sources} test_algorithm1.cpp test_algorithm2.cpp test_algorithm3.cpp)
 boostpolycoll_executable_setup(test_all)
