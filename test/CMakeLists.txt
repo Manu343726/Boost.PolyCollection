@@ -25,15 +25,15 @@ set(BOOST_POLYCOLLECTION_FEATURES
     registration
 )
 
-foreach(feature ${BOOST_POLYCOLLECTION_FEATURES})
-    add_boostpolycoll_test(${feature})
+# foreach(feature ${BOOST_POLYCOLLECTION_FEATURES})
+#     add_boostpolycoll_test(${feature})
+# 
+#     list(APPEND test_all_sources
+#         test_${feature}.cpp
+#         test_${feature}.hpp
+#         test_utilities.hpp
+#     )
+# endforeach()
 
-    list(APPEND test_all_sources
-        test_${feature}.cpp
-        test_${feature}.hpp
-        test_utilities.hpp
-    )
-endforeach()
-
-add_executable(test_all test_all_main.cpp ${test_all_sources} test_algorithm.cpp test_algorithm1.cpp test_algorithm2.cpp test_algorithm3.cpp)
-boostpolycoll_executable_setup(test_all)
+# add_executable(test_all test_all_main.cpp ${test_all_sources} test_algorithm.cpp test_algorithm1.cpp test_algorithm2.cpp test_algorithm3.cpp)
+# boostpolycoll_executable_setup(test_all)
