@@ -58,4 +58,4 @@ function(boostpolycoll_executable_setup_easy NAME)
 endfunction()
 
 add_subdirectory(example)
-add_subdirectory(test)
+# add_subdirectory(test)
