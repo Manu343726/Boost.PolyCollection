@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(Boost.PolyCollection)
+include(CMakeParseArguments)
 
 option(BOOST_POLYCOLLECTION_ENABLE_VALGRIND "Run unit tests with valgrind" OFF)
 
@@ -14,6 +15,7 @@ if(NOT BOOST_POLYCOLLECTION_INCLUDE_DIR)
 endif()
 
 find_package(Boost ${BOOST_POLYCOLLECTION_BOOST_VERSION} REQUIRED)
+message(STATUS "Boost include dir: ${Boost_INCLUDE_DIRS}")
 
 function(boostpolycoll_executable_setup TARGET)
     cmake_parse_arguments(ARGS
@@ -48,6 +50,11 @@ function(boostpolycoll_executable_setup TARGET)
         COMMENT "Running ${TARGET}..."
         VERBATIM
     )
+endfunction()
+
+function(boostpolycoll_executable_setup_easy NAME)
+    add_executable(${NAME} ${NAME}.cpp)
+    boostpolycoll_executable_setup(${NAME} ${ARGN})
 endfunction()
 
 add_subdirectory(example)
