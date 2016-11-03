@@ -23,7 +23,7 @@ matrix:
             - boost-latest
 
   # Release
-    - env: BUILD_TYPE=Debug CLANG_VERSION=3.7 GCC_VERSION=5.2.1
+    - env: BUILD_TYPE=Release CLANG_VERSION=3.7 GCC_VERSION=5.2.1
       os: linux
       addons: *clang37
 
