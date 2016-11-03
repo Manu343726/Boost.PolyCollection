@@ -22,8 +22,8 @@ matrix:
             - llvm-toolchain-precise-3.7
             - boost-latest
 
-  # Release
-    - env: BUILD_TYPE=Debug CLANG_VERSION=3.7 GCC_VERSION=5.2.1
+  # Release, GCC
+    - env: BUILD_TYPE=Release GCC_VERSION=5.2.1
       os: linux
       addons: *clang37
 
