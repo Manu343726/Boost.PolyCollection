@@ -1,6 +1,6 @@
 boostpolycoll_executable_setup_easy(perf NO_VALGRIND
 COMMAND_LINE_ARGS
-    insert_base for_each_base
+    "insert_base for_each_base"
 )
 boostpolycoll_executable_setup_easy(algorithms)
 boostpolycoll_executable_setup_easy(basic_any)
