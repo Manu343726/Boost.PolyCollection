@@ -5,7 +5,7 @@ include(CMakeParseArguments)
 option(BOOST_POLYCOLLECTION_ENABLE_VALGRIND "Run unit tests with valgrind" OFF)
 
 if(NOT MSVC)
-    set(BOOST_POLYCOLLECTION_COMPILE_OPTIONS -std=c++11 -Wall -pedantic)
+    set(BOOST_POLYCOLLECTION_COMPILE_OPTIONS -std=c++14 -Wall -pedantic)
 endif()
 if(NOT BOOST_POLYCOLLECTION_BOOST_VERSION)
     set(BOOST_POLYCOLLECTION_BOOST_VERSION 1.55.0)
