@@ -21,7 +21,7 @@ function(boostpolycoll_executable_setup TARGET)
     cmake_parse_arguments(ARGS
         "NO_VALGRIND"
         ""
-        ""
+        "COMMAND_LINE_ARGS"
         ${ARGN}
     )
 
@@ -45,7 +45,7 @@ function(boostpolycoll_executable_setup TARGET)
     endif()
 
     add_custom_target(run_${TARGET}
-        COMMAND ${valgrind_command} $<TARGET_FILE_DIR:${TARGET}>/$<TARGET_FILE_NAME:${TARGET}>
+        COMMAND ${valgrind_command} $<TARGET_FILE_DIR:${TARGET}>/$<TARGET_FILE_NAME:${TARGET}> ${ARGS_COMMAND_LINE_ARGS}
         DEPENDS ${TARGET} # Build target first
         COMMENT "Running ${TARGET}..."
         VERBATIM
@@ -58,4 +58,4 @@ function(boostpolycoll_executable_setup_easy NAME)
 endfunction()
 
 add_subdirectory(example)
-# add_subdirectory(test)
+add_subdirectory(test)
