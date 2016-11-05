@@ -27,18 +27,18 @@ matrix:
     - env: PERF_TEST=""                   # unit tests, clang
     - env: PERF_TEST="" GCC_VERSION=5.2.1 # unit tests, gcc
     # Perf tests:
-    - env: PERF_TEST="insert_base"                         # insert_base,      clang
-    - env: PERF_TEST="insert_base"      GCC_VERSION=5.2.1  # insert_base,      gcc
-    - env: PERF_TEST="foreach_base"                        # foreach_base,     clang
-    - env: PERF_TEST="foreach_base"     GCC_VERSION=5.2.1  # foreach_base,     gcc
-    - env: PERF_TEST="insert_function"                     # insert_function,  clang
-    - env: PERF_TEST="insert_function"  GCC_VERSION=5.2.1  # insert_function,  gcc
-    - env: PERF_TEST="foreach_function"                    # foreach_function, clang
-    - env: PERF_TEST="foreach_function" GCC_VERSION=5.2.1  # foreach_function, gcc
-    - env: PERF_TEST="insert_any"                          # insert_any,       clang
-    - env: PERF_TEST="insert_any"       GCC_VERSION=5.2.1  # insert_any,       gcc
-    - env: PERF_TEST="foreach_any"                         # foreach_any,      clang
-    - env: PERF_TEST="foreach_any"      GCC_VERSION=5.2.1  # foreach_any,      gcc
+    - env: PERF_TEST="insert_base"                          # insert_base,       clang
+    - env: PERF_TEST="insert_base"       GCC_VERSION=5.2.1  # insert_base,       gcc
+    - env: PERF_TEST="for_each_base"                        # for_each_base,     clang
+    - env: PERF_TEST="for_each_base"     GCC_VERSION=5.2.1  # for_each_base,     gcc
+    - env: PERF_TEST="insert_function"                      # insert_function,   clang
+    - env: PERF_TEST="insert_function"   GCC_VERSION=5.2.1  # insert_function,   gcc
+    - env: PERF_TEST="for_each_function"                    # for_each_function, clang
+    - env: PERF_TEST="for_each_function" GCC_VERSION=5.2.1  # for_each_function, gcc
+    - env: PERF_TEST="insert_any"                           # insert_any,        clang
+    - env: PERF_TEST="insert_any"        GCC_VERSION=5.2.1  # insert_any,        gcc
+    - env: PERF_TEST="for_each_any"                         # for_each_any,      clang
+    - env: PERF_TEST="for_each_any"      GCC_VERSION=5.2.1  # for_each_any,      gcc
 
 before_install:
   - if [ -n "$GCC_VERSION" ]; then export CXX="g++-5" CC="gcc-5"; fi
