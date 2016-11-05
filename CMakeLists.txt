@@ -3,6 +3,7 @@ project(Boost.PolyCollection)
 include(CMakeParseArguments)
 
 option(BOOST_POLYCOLLECTION_ENABLE_VALGRIND "Run unit tests with valgrind" OFF)
+option(BOOST_POLYCOLLECTION_PERF_ONLY "Only compile and run performance test" OFF)
 
 if(NOT MSVC)
     set(BOOST_POLYCOLLECTION_COMPILE_OPTIONS -std=c++14 -Wall -pedantic)
@@ -58,4 +59,7 @@ function(boostpolycoll_executable_setup_easy NAME)
 endfunction()
 
 add_subdirectory(example)
-# add_subdirectory(test)
+
+if(NOT BOOST_POLYCOLLECTION_PERF_ONLY)
+    add_subdirectory(test)
+endif()

@@ -2,30 +2,43 @@
 # https://github.com/Manu343726/siplasplas/blob/master/.travis.yml
 
 language: cpp
+os: linux
+addons:
+  apt:
+    packages:
+      - clang-3.7
+      - g++-5 # We need an updated stdlibc++ for clang too
+      - gcc-5
+      - libboost1.55-all-dev # For Standardese
+      - valgrind
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.7
+      - boost-latest
+
+env:
+  global:
+    - BUILD_TYPE=Release
+    - CLANG_VERSION="3.7"
 
 matrix:
   include:
-
-  # Main build: Release, Clang
-    - env: BUILD_TYPE=Release CLANG_VERSION=3.7
-      os: linux
-      addons: &clang37
-        apt:
-          packages:
-            - clang-3.7
-            - g++-5 # We need an updated stdlibc++ for clang too
-            - gcc-5
-            - libboost1.55-all-dev # For Standardese
-            - valgrind
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-            - boost-latest
-
-  # Release, GCC
-    - env: BUILD_TYPE=Release GCC_VERSION=5.2.1
-      os: linux
-      addons: *clang37
+    # Unit tests:
+    - env: PERF_TEST=""                   # unit tests, clang
+    - env: PERF_TEST="" GCC_VERSION=5.2.1 # unit tests, gcc
+    # Perf tests:
+    - env: PERF_TEST="insert_base"                         # insert_base,      clang
+    - env: PERF_TEST="insert_base"      GCC_VERSION=5.2.1  # insert_base,      gcc
+    - env: PERF_TEST="foreach_base"                        # foreach_base,     clang
+    - env: PERF_TEST="foreach_base"     GCC_VERSION=5.2.1  # foreach_base,     gcc
+    - env: PERF_TEST="insert_function"                     # insert_function,  clang
+    - env: PERF_TEST="insert_function"  GCC_VERSION=5.2.1  # insert_function,  gcc
+    - env: PERF_TEST="foreach_function"                    # foreach_function, clang
+    - env: PERF_TEST="foreach_function" GCC_VERSION=5.2.1  # foreach_function, gcc
+    - env: PERF_TEST="insert_any"                          # insert_any,       clang
+    - env: PERF_TEST="insert_any"       GCC_VERSION=5.2.1  # insert_any,       gcc
+    - env: PERF_TEST="foreach_any"                         # foreach_any,      clang
+    - env: PERF_TEST="foreach_any"      GCC_VERSION=5.2.1  # foreach_any,      gcc
 
 before_install:
   - if [ -n "$GCC_VERSION" ]; then export CXX="g++-5" CC="gcc-5"; fi
@@ -62,8 +75,12 @@ install:
   - if [ ! -d build ]; then mkdir build; fi
   - cd build
 
+  - if [ -n "$PERF_TEST" ]; then export BOOST_POLYCOLLECTION_PERF_ONLY=ON; else export BOOST_POLYCOLLECTION_PERF_ONLY=OFF; fi
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+              -DBOOST_POLYCOLLECTION_PERF_ONLY="$BOOST_POLYCOLLECTION_PERF_ONLY"
+              -DBOOST_POLYCOLLECTION_PERF_TESTS="$PERF_TEST"
   - cmake --build .
 
 script:
-  - make run_perf
+  - if [ -n "$PERF_TEST" ]; then make run_perf; fi
+  - if [ -z "$PERF_TEST" ]; then make run_test_all; fi
