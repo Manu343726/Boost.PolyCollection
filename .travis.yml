@@ -20,6 +20,8 @@ env:
   global:
     - BUILD_TYPE=Release
     - CLANG_VERSION="3.7"
+    - GITHUB_USER="Manu343726"
+    - secure: "Xdoi99XRR9w75TVC/V+Py1elAIUUsDbFkBmDtOs8RvACpGj9yP433hrSmrY7+0ihsXHe5RZHmguf99PxK1jmEj8ug6IV5EfnJaNwf/1GZghj3l8fmGi2qMjETPvqehl00TWnQ9c4eTMIifiu84ZyzZhuIKAVcbB22RTfQUT46ePlTtV/ML1J6yL+ccXvdwclKmLunsWF1PjxXbCCsvU8CTPkdtz1zXydVbkWoMgmqOan95eLAFCunsjrJd3M8omDNxkBfPYqbavD1TAaAfFgmplWyLQO2rPgKQfsJBLbnT8/peeRejriuhThmKS8wLZAXlgDRRwB0nIgH9NwIw3ZCdQjg9+rBaGkvb9WJgjSCqVWtK/caZS95C/8adN1EJYiZwM7p8/8mtTTRfhOJfBjp6Smc2kJdjzvouwqP7Gg3IdAZtRsX/BHcmMSSsp4m2i0Q172KphBeV+qVUzGBu2rUKDNQkXOUr4BRMxwyuFyGfZvMFr+f+XbqdkFZ167XKTulIk4o3tTr5VNv7UMLCpCWnmNhDFKTxoJFtyL7MUydx/vxWs7BBsB6b8AqK//s1itk2SJ5Q/HzczroTqK4bXINqn/a+Ft/RNlTEzLayKeafTju6c7Qt0dy5EYL9HdFacwHADO9FLGGwyyW9/NMk3+TwQlh7j2aoQjWOaOZhpitBA="
 
 matrix:
   include:
@@ -41,8 +43,8 @@ matrix:
     - env: PERF_TEST="for_each_any"      GCC_VERSION=5.2.1  # for_each_any,      gcc
 
 before_install:
-  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-5" CC="gcc-5"; fi
-  - if [ -z "$GCC_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-5" CC="gcc-5" COMPILER_NAME="gcc" COMPILER_VERSION="$GCC_VERSION"; fi
+  - if [ -z "$GCC_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}" COMPILER_NAME="clang" COMPILER_VERSION="$CLANG_VERSION"; fi
   - which $CXX
   - which $CC
   - $CXX --version
@@ -82,5 +84,22 @@ install:
   - cmake --build .
 
 script:
-  - if [ -n "$PERF_TEST" ]; then make run_perf; fi
+  - if [ -n "$PERF_TEST" ]; then make run_perf | tee perf_${PERF_TEST}.txt; fi
   - if [ -z "$PERF_TEST" ]; then make run_test_all; fi
+
+after_success:
+  - if [ -n "$PERF_TEST" ]; then git clone https://${GITHUB_USER}:${GITHUB_USER_TOKEN}@github.com/Manu343726/Boost.Polycollection.Perf perf && cd perf; fi
+
+  - if [ -n "$PERF_TEST" -a ! -d "./${TRAVIS_OS_NAME}"]; mkdir "./${TRAVIS_OS_NAME}"; fi
+  - if [ -n "$PERF_TEST" ]; then cd "./${TRAVIS_OS_NAME}"; fi
+  - if [ -n "$PERF_TEST" -a ! -d "./${COMPILER_NAME}" ]; then mkdir "./${COMPILER_NAME}"; fi
+  - if [ -n "$PERF_TEST" ]; then cd "./${COMPILER_NAME}"; fi
+  - if [ -n "$PERF_TEST" -a ! -d "./${COMPILER_VERSION}" ]; then mkdir "./${COMPILER_VERSION}"; fi
+  - if [ -n "$PERF_TEST" ]; then cd "./${COMPILER_VERSION}"; fi
+
+  - if [ -n "$PERF_TEST" -a ! -d "./${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}" ]; then mkdir "./${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}"; fi
+  - if [ -n "$PERF_TEST" ]; then cd "./${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}"; fi
+  - if [ -n "$PERF_TEST" ]; then cp ${TRAVIS_BUILD_DIR}/build/perf_${PERF_TEST}.txt .; fi
+
+  - if [ -n "$PERF_TEST" ]; then git add --all && git commit -m "${PERF_TEST} results of commit '${TRAVIS_COMMIT}', build ${TRAVIS_BUILD_NUMBER}"; fi
+  - if [ -n "$PERF_TEST" ]; then git push origin master --quiet; fi
